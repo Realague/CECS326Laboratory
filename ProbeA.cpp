@@ -2,8 +2,8 @@
 
 using namespace std;
 
-int main() {
-    MessageQueue probeA(0);
+int main(int num, char *args[]) {
+    MessageQueue probeA(0,args[1][0]);
     
     for (int i = 0; i < 10; i++)
     {

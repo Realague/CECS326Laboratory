@@ -2,6 +2,8 @@
 #include<sys/msg.h>
 #include<iostream>
 #include<string>
+#include<random>
+#include<ctime>
 #include"Message.h"
 
 class MessageQueue
@@ -9,18 +11,19 @@ class MessageQueue
 private:
     int qid;
 public:
-    MessageQueue(int);
+    MessageQueue(int,char &);
     ~MessageQueue();
     bool sendMessage(std::string,int,int);
     bool recieveMessage(int,int);
 };
 
-MessageQueue::MessageQueue(int q) {
-    qid = msgget(ftok(".",'r'),q);
+MessageQueue::MessageQueue(int q,char & u) {
+    
+    qid = msgget(ftok(".",u),q);
 }
 
 MessageQueue::~MessageQueue() {
-    //msgctl(qid,IPC_RMID,NULL);
+    msgctl(qid,IPC_RMID,NULL);
 }
 
 bool MessageQueue::sendMessage(std::string msgbdy, int mtype ,int flag) {
@@ -56,27 +59,15 @@ bool MessageQueue::recieveMessage(int mtype,int flag) {
             break;
         case EINVAL:
             std::cout << "msgqid was invalid, or msgsz was less than 0" << std::endl;
+        case EIDRM:
+            std::cout << "No QUEUE" << std::endl;
+            break;
+        case EINTR:
+            std::cout << "caught signal" << std::endl;
         default:
             std:: cout << "Unexpected Error occured" << std::endl;
             break;
         }
-
-
-
-
-
-        // if (errno == ENOMSG) {
-            
-        // } else if (errno == EIDRM) {
-        //     std::cout << "No QUEUE" << std::endl;
-        // } else if (errno == EINTR) {
-        //     std::cout << "caught signal" << std::endl;
-        // } else if (errno == E2BIG) {
-        //     std::cout << "Message is too large" << std::endl;
-        // } else {
-            
-        // }
-        // std::cout << "Error in recieved" << std::endl;
     } else {
         std::cout << "Recieving Message on " << buf.mtype<<": \n"<< buf.greeting << std::endl;
     }
