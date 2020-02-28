@@ -7,7 +7,7 @@ int main(int num, char *args[]) {
     
     for (int i = 0; i < 10; i++)
     {
-        bool error = probeA.sendMessage("Hey",333+i,0);
+        bool error = probeA.sendMessage("Hey this is from probeA",333+i,0);
         if (error != false) {
             cout << "Error when sending message from ProbeA" << endl;
         }

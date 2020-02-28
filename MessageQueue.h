@@ -18,7 +18,6 @@ public:
 };
 
 MessageQueue::MessageQueue(int q,char & u) {
-    
     qid = msgget(ftok(".",u),q);
 }
 
@@ -26,8 +25,9 @@ MessageQueue::~MessageQueue() {
     msgctl(qid,IPC_RMID,NULL);
 }
 
+//returns true if there is a error sending the message
 bool MessageQueue::sendMessage(std::string msgbdy, int mtype ,int flag) {
-    if (flag == 0 || flag == IPC_NOWAIT) {
+    if (flag == 0) {
         Message buf;
         strcpy(buf.greeting,msgbdy.c_str());
         buf.mtype = mtype;
@@ -71,5 +71,5 @@ bool MessageQueue::recieveMessage(int mtype,int flag) {
     } else {
         std::cout << "Recieving Message on " << buf.mtype<<": \n"<< buf.greeting << std::endl;
     }
-    return size == -1;
+    return res == -1;
 }

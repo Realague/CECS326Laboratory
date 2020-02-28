@@ -7,14 +7,15 @@ int main(int num, char * args[]) {
 
     for (int i = 0; i < 10; i++)
     {
+        cout << "hello\n";
         bool error = false;
         error = Hub.recieveMessage(0,0);
-        if (error == false) {
+        if (error != false) {
             cout << "Error recieving message in Hub" << endl;
         }
 
         error = Hub.recieveMessage(331,0);
-        if (error == false) {
+        if (error != false) {
             cout << "Error recieving message in Hub" << endl;
         } else {
             error = Hub.sendMessage("hi", 133+i,0);
