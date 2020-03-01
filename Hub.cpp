@@ -3,29 +3,27 @@ using namespace std;
 
 int main(int num, char * args[]) {
     srand(time(NULL));
-    MessageQueue Hub(IPC_EXCL|IPC_CREAT|0600,args[1][0]);
 
-    for (int i = 0; i < 10; i++)
+    if (num < 2) {
+    	std::cout << "Error: Wrong argument" << std::endl;
+    	return 84;
+    }
+    MessageQueue Hub(IPC_EXCL|IPC_CREAT|0600,args[1][0], true);
+
+	cout << "Hub initialized" << std::endl;
+    for (int i = 0; i < 5; i++)
     {
-        cout << "hello\n";
-        bool error = false;
-        error = Hub.recieveMessage(0,0);
-        if (error != false) {
-            cout << "Error recieving message in Hub" << endl;
+        if (Hub.recieveMessage(300,0)) {
+            cout << "Error recieving message in Hub from ProbeB" << endl;
         }
 
-        error = Hub.recieveMessage(331,0);
-        if (error != false) {
-            cout << "Error recieving message in Hub" << endl;
+        if (Hub.recieveMessage(200,0)) {
+            cout << "Error recieving message in Hub from ProbeA" << endl;
         } else {
-            error = Hub.sendMessage("hi", 133+i,0);
-            if (error == false) {
-                cout << "Error sending in HUB" << endl; 
+            if (Hub.sendMessage("Mhub", 100,0)) {
+                cout << "Error sending in HUB" << endl;
             }
         }
-
-
     }
-
     return 0;
 }

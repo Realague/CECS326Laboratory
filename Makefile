@@ -1,10 +1,8 @@
-build:
-	g++ *.h && g++ Hub.cpp -o hub.out && g++ ProbeA.cpp -o probeA.out && g++ ProbeB.cpp -o probeB.out
+build	:
+	g++ *.h -std=c++11 && g++ Hub.cpp -std=c++11 -o hub.out && g++ ProbeA.cpp -std=c++11 -std=c++11 -o probeA.out && g++ ProbeB.cpp -std=c++11 -o probeB.out
 
-clean:
+clean	:
 	rm -rf *.out
 	rm -rf *.gch
 
-re:
-	clean
-	build
+re	:	clean build

@@ -3,13 +3,17 @@
 using namespace std;
 
 int main(int num, char * args[]) {
-    MessageQueue probeB(0,args[1][0]);
+	if (num < 2) {
+		std::cout << "Error: Wrong argument" << std::endl;
+		return 84;
+	}
+    MessageQueue probeB(0,args[1][0], false);
     
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
-        bool error = probeB.sendMessage("Yo this is from ProbeB",233+i,0);
-        if (error != false) {
-            cout << "Error when sending message from ProbeB" << endl;
+	    cout << "sending message from ProbeB" << endl;
+        if (probeB.sendMessage("MProbeB",300,0)) {
+		cout << "Error when sending message from ProbeB" << endl;
         }
     }
 }

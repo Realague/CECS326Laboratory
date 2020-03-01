@@ -10,19 +10,23 @@ class MessageQueue
 {
 private:
     int qid;
+    bool	isHub;
 public:
-    MessageQueue(int,char &);
+    MessageQueue(int,char &, bool);
     ~MessageQueue();
     bool sendMessage(std::string,int,int);
     bool recieveMessage(int,int);
 };
 
-MessageQueue::MessageQueue(int q,char & u) {
+MessageQueue::MessageQueue(int q,char & u, bool isHub)
+: isHub(isHub) {
     qid = msgget(ftok(".",u),q);
 }
 
 MessageQueue::~MessageQueue() {
-    msgctl(qid,IPC_RMID,NULL);
+	if (isHub) {
+		msgctl(qid,IPC_RMID,NULL);
+	}
 }
 
 //returns true if there is a error sending the message
@@ -50,7 +54,7 @@ bool MessageQueue::recieveMessage(int mtype,int flag) {
     int size = sizeof(buf) - sizeof(long);
     buf.greeting[0] = 0;
     int res = msgrcv(qid,(struct Message *)&buf,size, mtype, 0);
-    std::cout << buf.mtype << std::endl;
+    //std::cout << buf.mtype << std::endl;
     if (res <= 0) {
         switch (errno)
         {
