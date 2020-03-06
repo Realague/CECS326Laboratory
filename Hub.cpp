@@ -2,7 +2,7 @@
 using namespace std;
 
 int main(int num, char * args[]) {
-    srand(time(NULL));
+    int messages = 0;
 
     if (num < 2) {
     	std::cout << "Error: Wrong argument" << std::endl;
@@ -11,19 +11,27 @@ int main(int num, char * args[]) {
     MessageQueue Hub(IPC_EXCL|IPC_CREAT|0600,args[1][0], true);
 
 	cout << "Hub initialized" << std::endl;
-    for (int i = 0; i < 5; i++)
+    while(true)
     {
         if (Hub.recieveMessage(300,0)) {
             cout << "Error recieving message in Hub from ProbeB" << endl;
         }
+        messages++;
 
         if (Hub.recieveMessage(200,0)) {
             cout << "Error recieving message in Hub from ProbeA" << endl;
         } else {
+            messages++;
             if (Hub.sendMessage("Mhub", 100,0)) {
                 cout << "Error sending in HUB" << endl;
             }
         }
+        if (messages >= 10)
+        {
+            break;
+        }
+        
     }
+    cout << "Hub terminated" << endl;
     return 0;
 }

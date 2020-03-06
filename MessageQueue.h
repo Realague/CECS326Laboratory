@@ -16,10 +16,12 @@ public:
     ~MessageQueue();
     bool sendMessage(std::string,int,int);
     bool recieveMessage(int,int);
+    int  genRandNum(int,int);
 };
 
 MessageQueue::MessageQueue(int q,char & u, bool isHub)
 : isHub(isHub) {
+    srand(time(NULL));
     qid = msgget(ftok(".",u),q);
 }
 
@@ -77,3 +79,7 @@ bool MessageQueue::recieveMessage(int mtype,int flag) {
     }
     return res == -1;
 }
+
+int MessageQueue::genRandNum(int min, int max) {
+    return (rand()%max)+1+min;
+}    
