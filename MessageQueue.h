@@ -11,16 +11,18 @@ class MessageQueue
 private:
     int qid;
     bool	isHub;
+    int nbMsgReceived;
 public:
     MessageQueue(int,char &, bool);
     ~MessageQueue();
     bool sendMessage(std::string,int,int);
     bool recieveMessage(int,int);
     int  genRandNum(int,int);
+    int getNumberMessageReceived();
 };
 
 MessageQueue::MessageQueue(int q,char & u, bool isHub)
-: isHub(isHub) {
+: isHub(isHub), nbMsgReceived(0) {
     srand(time(NULL));
     qid = msgget(ftok(".",u),q);
 }
@@ -75,6 +77,7 @@ bool MessageQueue::recieveMessage(int mtype,int flag) {
             break;
         }
     } else {
+    	nbMsgReceived++;
         std::cout << "Recieving Message on " << buf.mtype<<": \n"<< buf.greeting << std::endl;
     }
     return res == -1;
@@ -83,3 +86,7 @@ bool MessageQueue::recieveMessage(int mtype,int flag) {
 int MessageQueue::genRandNum(int min, int max) {
     return (rand()%max)+1+min;
 }    
+
+int MessageQueue::getNumberMessageReceived() {
+	return nbMsgReceived;
+}

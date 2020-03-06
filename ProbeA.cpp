@@ -24,8 +24,9 @@ int main(int num, char *args[]) {
             if (probeA.recieveMessage(100, 0)) {
                 cout << "error recieving message in ProbeA" << endl;
             }
-        } else if (num < 50)
+        } else if (gen < 50)
         {
+		cout << "ProbA terminated" << endl;
             break;
         }
         
