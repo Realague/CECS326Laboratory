@@ -15,9 +15,9 @@ int main(int num, char *args[]) {
     
     while (messageSnt < 5)
     {
-        int num = probeA.genRandNum(0,10000000);
-        if (num%alpha == 0 ) {
-            if (probeA.sendMessage(to_string(num).c_str(), 200,0)) {
+        int gen = probeA.genRandNum(0,10000000);
+        if (gen%alpha == 0 ) {
+            if (probeA.sendMessage(to_string(gen).c_str(), 200,0)) {
                 cout << "Error when sending message from ProbeA" << endl;
             }
             messageSnt++;

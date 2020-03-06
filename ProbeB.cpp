@@ -14,10 +14,10 @@ int main(int num, char * args[]) {
     
     while (messagesSnt < 50)
     {
-        int num = probeB.genRandNum(0,100000);
-        if (num%beta == 0 ) {
+        int gen = probeB.genRandNum(0,100000);
+        if (gen%beta == 0 ) {
             cout << "sending message from ProbeB" << endl;
-            if (probeB.sendMessage(to_string(num).c_str(),300,0)) {
+            if (probeB.sendMessage(to_string(gen).c_str(),300,0)) {
                 cout << "Error when sending message from ProbeB" << endl;
             }
             messagesSnt++;
