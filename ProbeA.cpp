@@ -5,6 +5,7 @@ using namespace std;
 int main(int num, char *args[]) {
     int alpha = 11997;
     int messageSnt = 0;
+    string pid = "";
 
 	if (num < 2) {
 		std::cout << "Error: Wrong argument" << std::endl;
@@ -21,7 +22,7 @@ int main(int num, char *args[]) {
                 cout << "Error when sending message from ProbeA" << endl;
             }
             messageSnt++;
-            if (probeA.recieveMessage(100, 0)) {
+            if (probeA.recieveMessage(100, 0,pid)) {
                 cout << "error recieving message in ProbeA" << endl;
             }
         } else if (gen < 50)

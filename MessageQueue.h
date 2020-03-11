@@ -4,6 +4,8 @@
 #include<string>
 #include<random>
 #include<ctime>
+#include<sys/types.h>
+#include<unistd.h>
 #include"Message.h"
 
 class MessageQueue
@@ -16,7 +18,7 @@ public:
     MessageQueue(int,char &, bool);
     ~MessageQueue();
     bool sendMessage(std::string,int,int);
-    bool recieveMessage(int,int);
+    bool recieveMessage(int,int,std::string&);
     int  genRandNum(int,int);
     int getNumberMessageReceived();
 };
@@ -37,6 +39,7 @@ MessageQueue::~MessageQueue() {
 bool MessageQueue::sendMessage(std::string msgbdy, int mtype ,int flag) {
     if (flag == 0) {
         Message buf;
+        msgbdy = std::to_string(getpid()) + ": " + msgbdy;
         strcpy(buf.greeting,msgbdy.c_str());
         buf.mtype = mtype;
         int size = sizeof(buf) - sizeof(long);
@@ -53,7 +56,7 @@ bool MessageQueue::sendMessage(std::string msgbdy, int mtype ,int flag) {
     return false;
 }
 
-bool MessageQueue::recieveMessage(int mtype,int flag) {
+bool MessageQueue::recieveMessage(int mtype,int flag,std::string &pid) {
     Message buf;
     int size = sizeof(buf) - sizeof(long);
     buf.greeting[0] = 0;
@@ -78,13 +81,14 @@ bool MessageQueue::recieveMessage(int mtype,int flag) {
         }
     } else {
     	nbMsgReceived++;
-        std::cout << "Recieving Message on " << buf.mtype<<": \n"<< buf.greeting << std::endl;
+        pid = std::string(buf.greeting,4);
+        std::cout << "Message from pid# " << pid <<": \n"<< buf.greeting << std::endl;
     }
     return res == -1;
 }
 
 int MessageQueue::genRandNum(int min, int max) {
-    return (rand()%max)+1+min;
+    return rand();//per assignment requirements
 }    
 
 int MessageQueue::getNumberMessageReceived() {
