@@ -18,7 +18,6 @@ public:
     bool sendMessage(std::string,int,int);
     bool recieveMessage(int,int,std::string&);
     int  genRandNum(int,int);
-    int getNumberMessageReceived();
 };
 
 MessageQueue::MessageQueue(int q,char & u) {
@@ -82,8 +81,4 @@ bool MessageQueue::recieveMessage(int mtype,int flag,std::string &pid) {
 
 int MessageQueue::genRandNum(int min, int max) {
     return rand();//per assignment requirements
-}    
-
-int MessageQueue::getNumberMessageReceived() {
-	return nbMsgReceived;
 }

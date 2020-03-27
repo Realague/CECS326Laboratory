@@ -1,5 +1,4 @@
-#include"MessageQueue.h"
-#include"force_patch.h"
+#include "Hub.h"
 
 using namespace std;
 
@@ -9,35 +8,34 @@ int main(int num, char * args[]) {
     	std::cout << "Error: Wrong argument" << std::endl;
     	return 84;
     }
-    Hub hub(IPC_EXCL|IPC_CREAT|0600,args[1][0], true);
+    string msg = "";
+    Hub hub(IPC_EXCL|IPC_CREAT|0600,args[1][0]);
 
 	cout << "Hub initialized" << std::endl;
-    while(hub.shouldHubExit())
-    {
-    	if (!hub.hasProbeAExit() && hub.recieveMessage(200,0,msg)) {
+    while(hub.shouldHubExit()) {
+    	if (!hub.hasProbeAExited() && hub.recieveMessage(200,0,msg)) {
     		cout << "Error recieving message in Hub from ProbeA" << endl;
     	} else if (msg == "dead") {
-		hub.setHubAExit(true);
+		hub.setProbeAExit(true);
 	} else {
     		cout << "send a message to probeA: " << msg << endl;
     		if (hub.sendMessage("Mhub", 100,0)) {
     			cout << "Error sending in HUB" << endl;
     		}
     	}
-    	}
 
-    	if (!hub.hasProbeBExit() && hub.recieveMessage(300,0,msg)) {
+    	if (!hub.hasProbeBExited() && hub.recieveMessage(300,0,msg)) {
     		cout << "Error recieving message in Hub from ProbeB" << endl;
     	} else if (msg == "dead") {
-		hub.setHubBExit(true);
+		hub.setProbeBExit(true);
 	} else {
 		cout << "Message from Probe B: " << msg <<endl;
 	}
 
-        if (!hub.hasProbeCkExit && hub.recieveMessage(400,0,msg)) {
+        if (!hub.hasProbeCExited() && hub.recieveMessage(400,0,msg)) {
         	cout << "Error recieving message in Hub from ProbeC" << endl;
         } else if (msg == "dead") {
-		hub.setHubCExit(true);
+		hub.setProbeCExit(true);
 	} else {
 		cout << "Message from Probe C: " << msg << endl;
 	}

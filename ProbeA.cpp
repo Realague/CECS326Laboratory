@@ -10,9 +10,10 @@ int main(int num, char *args[]) {
 		return 84;
 	}
 
-    MessageQueue probeA(0,args[1][0], false);
+    MessageQueue probeA(0,args[1][0]);
+	string msg = "";
     
-    while (messageSnt < 5)
+    while (true)
     {
         int gen = probeA.genRandNum(0,10000000);
         if (gen%alpha == 0 ) {

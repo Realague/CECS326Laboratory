@@ -7,8 +7,9 @@
 #include<sys/types.h>
 #include<unistd.h>
 #include"Message.h"
+#include "force_patch.h"
 
-class MessageQueue
+class Hub
 {
 private:
 	int qid;
@@ -20,45 +21,46 @@ private:
 	bool hasProbeCExit;
 	void killProbeB();
 public:
-    MessageQueue(int,char &);
-    ~MessageQueue();
+    Hub(int,char &);
+    ~Hub();
     bool sendMessage(std::string,int,int);
     bool recieveMessage(int,int,std::string&);
     int  genRandNum(int,int);
     int getNumberMessageReceived();
 	bool shouldHubExit();
-	bool hasProbeAExit();
-	bool hasProbeBExit();
-	bool hasProbeCExit();
+	bool hasProbeAExited();
+	bool hasProbeBExited();
+	bool hasProbeCExited();
 	void setProbeAExit(bool);
 	void setProbeBExit(bool);
 	void setProbeCExit(bool);
 };
 
-MessageQueue::MessageQueue(int q,char & u)
+Hub::Hub(int q,char & u)
 : nbMsgReceived(0), hasProbeAExit(false), hasProbeBExit(false), hasProbeCExit(false) {
     srand(time(NULL));
     qid = msgget(ftok(".",u),q);
+    std::string pid = "";
 
-    if (hub.recieveMessage(300,0,pid)) {
-	    cout << "Error recieving message in Hub from ProbeB" << endl;
+    if (this->recieveMessage(300,0,pid)) {
+	    std::cout << "Error recieving message in Hub from ProbeB" << std::endl;
     }
-    cout << "Pid of probe B is #" << pid <<endl;
+    std::cout << "Pid of probe B is #" << pid << std::endl;
     this->probeBPid = stoi(pid);
 
-    if ( hub.recieveMessage(400,0,pid)) {
-    	cout << "Error recieving message in Hub from ProbeC" << endl;
+    if (this->recieveMessage(400,0,pid)) {
+    	std::cout << "Error recieving message in Hub from ProbeC" << std::endl;
     }
-    cout << "pid of probe C  is #" << pid << endl;
+    std::cout << "pid of probe C  is #" << pid << std::endl;
     this->probeCPid = stoi(pid);
 }
 
-MessageQueue::~MessageQueue() {
+Hub::~Hub() {
 	msgctl(qid,IPC_RMID,NULL);
 }
 
 //returns true if there is a error sending the message
-bool MessageQueue::sendMessage(std::string msgbdy, int mtype ,int flag) {
+bool Hub::sendMessage(std::string msgbdy, int mtype ,int flag) {
     if (flag == 0) {
         Message buf;
         msgbdy = std::to_string(getpid()) + ": " + msgbdy;
@@ -78,7 +80,7 @@ bool MessageQueue::sendMessage(std::string msgbdy, int mtype ,int flag) {
     return false;
 }
 
-bool MessageQueue::recieveMessage(int mtype,int flag,std::string &pid) {
+bool Hub::recieveMessage(int mtype,int flag,std::string &pid) {
     Message buf;
     int size = sizeof(buf) - sizeof(long);
     buf.greeting[0] = 0;
@@ -112,42 +114,42 @@ bool MessageQueue::recieveMessage(int mtype,int flag,std::string &pid) {
     return res == -1;
 }
 
-int MessageQueue::genRandNum(int min, int max) {
+int Hub::genRandNum(int min, int max) {
     return rand();//per assignment requirements
 }    
 
-int MessageQueue::getNumberMessageReceived() {
+int Hub::getNumberMessageReceived() {
 	return nbMsgReceived;
 }
 
-void MessageQueue::killProbeB() {
-	cout << force_patch(pid);
+void Hub::killProbeB() {
+	std::cout << force_patch(probeBPid) << std::endl;
 }
 
-void MessageQueue::shouldHubExit(){
+bool Hub::shouldHubExit(){
 	return this->hasProbeAExit && this->hasProbeBExit && this->hasProbeCExit;
 }
 
-void MessageQueue::hasProbeAExit() {
-	this->hasProbeAExit
+bool Hub::hasProbeAExited() {
+	return this->hasProbeAExit;
 }
 
-void MessageQueue::hasProbeBExit() {
-	this->hasProbeBExit
+bool Hub::hasProbeBExited() {
+	return this->hasProbeBExit;
 }
 
-void MessageQueue::hasProbeCExit() {
-	this->hasProbeCExit
+bool Hub::hasProbeCExited() {
+	return this->hasProbeCExit;
 }
 
-void MessageQueue::setProbeAExit(bool boolean) {
+void Hub::setProbeAExit(bool boolean) {
 	this->hasProbeAExit = boolean;
 }
 
-void MessageQueue::setProbeBExit(bool boolean) {
+void Hub::setProbeBExit(bool boolean) {
 	this->hasProbeBExit = boolean;
 }
 
-void MessageQueue::setProbeCExit(bool boolean) {
+void Hub::setProbeCExit(bool boolean) {
 	this->hasProbeCExit = boolean;
 }

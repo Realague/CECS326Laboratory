@@ -7,12 +7,13 @@ int main(int num, char * args[]) {
 		std::cout << "Error: Wrong argument" << std::endl;
 		return 84;
 	}
-    MessageQueue probeC(0,args[1][0], false);
-	if (probeB.sendMessage(to_string(getpid()).c_str(),400,0)) {
+    MessageQueue probeC(0,args[1][0]);
+	if (probeC.sendMessage(to_string(getpid()).c_str(),400,0)) {
 		cout << "Error when sending pid from ProbeC" << endl;
 	}
+	string msg = "";
 
-    while (messageSnt < 5)
+    while (true)
     {
         int gen = probeC.genRandNum(0,300000);
         if (gen < rho)

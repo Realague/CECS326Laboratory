@@ -9,12 +9,13 @@ int main(int num, char * args[]) {
 		std::cout << "Error: Wrong argument" << std::endl;
 		return 84;
 	}
-    MessageQueue probeB(0,args[1][0], false);
+    MessageQueue probeB(0,args[1][0]);
 	if (probeB.sendMessage(to_string(getpid()).c_str(),300,0)) {
 		cout << "Error when sending pid from ProbeB" << endl;
 	}
+	string msg = "";
     
-    while (messagesSnt < 5)
+    while (true)
     {
         int gen = probeB.genRandNum(0,100000);
         if (gen%beta == 0) {
