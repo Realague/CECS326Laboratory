@@ -3,7 +3,7 @@
 using namespace std;
 
 int main(int num, char *args[]) {
-    int alpha = 11997;
+    int alpha = 64223;
 
 	if (num < 2) {
 		std::cout << "Error: Wrong argument" << std::endl;

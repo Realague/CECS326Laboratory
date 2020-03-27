@@ -8,24 +8,28 @@
 #include<unistd.h>
 #include"Message.h"
 #include "force_patch.h"
-
+//Hub datatype -> could have been derived from MessageQueue
 class Hub
 {
 private:
+    //store queue,probeB,and probeC ids 
 	int qid;
 	int nbMsgReceived;
 	int probeBPid;
 	int probeCPid;
+    //probe status variables -> would be better with a enum for probe status
 	bool hasProbeAExit;
 	bool hasProbeBExit;
 	bool hasProbeCExit;
+    //method to run force_patch
 	void killProbeB();
 public:
     Hub(int,char &);
     ~Hub();
+    //wrapper methods for msgsnd and msgrcv
     bool sendMessage(std::string,int,int);
     bool recieveMessage(int,int,std::string&);
-    int  genRandNum(int,int);
+    int  genRandNum();
     int getNumberMessageReceived();
 	bool shouldHubExit();
 	bool hasProbeAExited();
@@ -39,6 +43,7 @@ public:
 Hub::Hub(int q,char & u)
 : nbMsgReceived(0), hasProbeAExit(false), hasProbeBExit(false), hasProbeCExit(false) {
     srand(time(NULL));
+    //init with argument project_id
     qid = msgget(ftok(".",u),q);
     std::string pid = "";
 
@@ -68,6 +73,7 @@ bool Hub::sendMessage(std::string msgbdy, int mtype ,int flag) {
         buf.mtype = mtype;
         int size = sizeof(buf) - sizeof(long);
         int res = msgsnd(qid,(struct Message *)&buf,size,flag);
+        //res will be -1 if there was an error
         if (res < 0) {
             if (errno == EAGAIN) {
                 std::cout << "No space in queue for message..." << std::endl;
@@ -80,6 +86,7 @@ bool Hub::sendMessage(std::string msgbdy, int mtype ,int flag) {
     return false;
 }
 
+//returns true if error recieving message
 bool Hub::recieveMessage(int mtype,int flag,std::string &pid) {
     Message buf;
     int size = sizeof(buf) - sizeof(long);
@@ -103,9 +110,9 @@ bool Hub::recieveMessage(int mtype,int flag,std::string &pid) {
             std:: cout << "Unexpected Error occured" << std::endl;
             break;
         }
-    } else {
+    } else {//increment # of messages get pid of sender
     	nbMsgReceived++;
-        pid = std::string(buf.greeting,4);
+        pid = std::string(buf.greeting,5);
         std::cout << "Message from pid# " << pid <<": \n"<< buf.greeting << std::endl;
     }
     if (nbMsgReceived >= 10000) {
@@ -114,7 +121,7 @@ bool Hub::recieveMessage(int mtype,int flag,std::string &pid) {
     return res == -1;
 }
 
-int Hub::genRandNum(int min, int max) {
+int Hub::genRandNum() {
     return rand();//per assignment requirements
 }    
 
@@ -127,6 +134,7 @@ void Hub::killProbeB() {
 }
 
 bool Hub::shouldHubExit(){
+    std::cout << this->hasProbeAExit && this->hasProbeBExit && this->hasProbeCExit << '\n';
 	return this->hasProbeAExit && this->hasProbeBExit && this->hasProbeCExit;
 }
 
