@@ -2,13 +2,15 @@
 using namespace std;
 int main(int num, char * args[]) {
     int rho = 3990;
-    int messageSnt = 0;
 
     if (num < 2) {
 		std::cout << "Error: Wrong argument" << std::endl;
 		return 84;
 	}
     MessageQueue probeC(0,args[1][0], false);
+	if (probeB.sendMessage(to_string(getpid()).c_str(),400,0)) {
+		cout << "Error when sending pid from ProbeC" << endl;
+	}
 
     while (messageSnt < 5)
     {
@@ -19,10 +21,11 @@ int main(int num, char * args[]) {
 		if (probeC.sendMessage(to_string(gen).c_str(),400,0)) {
 			cout << "Error when sending message from ProbeC" << endl;
 		}
-		messageSnt++;
         }
-        
     }
-    cout << "ProbB terminated" << endl;
+    if (probeC.sendMessage("dead",400,0)) {
+    	cout << "Error when sending message from ProbeC" << endl;
+    }
+    cout << "ProbC terminated" << endl;
 
 }

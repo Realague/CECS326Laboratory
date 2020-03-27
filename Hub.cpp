@@ -9,41 +9,38 @@ int main(int num, char * args[]) {
     	std::cout << "Error: Wrong argument" << std::endl;
     	return 84;
     }
-    MessageQueue Hub(IPC_EXCL|IPC_CREAT|0600,args[1][0], true);
-    string pid = "";
-    bool biskill = false;
+    Hub hub(IPC_EXCL|IPC_CREAT|0600,args[1][0], true);
 
 	cout << "Hub initialized" << std::endl;
-    while(true)
+    while(hub.shouldHubExit())
     {
-        if (!biskill) {
-            if (Hub.recieveMessage(300,0,pid)) {
-                cout << "Error recieving message in Hub from ProbeB" << endl;
-            }
-            cout << "Pid of probe B is #" << pid <<endl;
-            cout << "killing probe B" << endl;
-            cout << force_patch(stoi(pid));
-            biskill = true;
-        }
+    	if (!hub.hasProbeAExit() && hub.recieveMessage(200,0,msg)) {
+    		cout << "Error recieving message in Hub from ProbeA" << endl;
+    	} else if (msg == "dead") {
+		hub.setHubAExit(true);
+	} else {
+    		cout << "send a message to probeA: " << msg << endl;
+    		if (hub.sendMessage("Mhub", 100,0)) {
+    			cout << "Error sending in HUB" << endl;
+    		}
+    	}
+    	}
 
-        if (Hub.recieveMessage(400,0,pid)) {
+    	if (!hub.hasProbeBExit() && hub.recieveMessage(300,0,msg)) {
+    		cout << "Error recieving message in Hub from ProbeB" << endl;
+    	} else if (msg == "dead") {
+		hub.setHubBExit(true);
+	} else {
+		cout << "Message from Probe B: " << msg <<endl;
+	}
+
+        if (!hub.hasProbeCkExit && hub.recieveMessage(400,0,msg)) {
         	cout << "Error recieving message in Hub from ProbeC" << endl;
-        }
-        cout << "pid of probe C  is #" << pid << endl;
-        if (Hub.recieveMessage(200,0,pid)) {
-            cout << "Error recieving message in Hub from ProbeA" << endl;
-        } else {
-            cout << "pid of probe A is #" << pid << endl;
-            if (Hub.sendMessage("Mhub", 100,0)) {
-                cout << "Error sending in HUB" << endl;
-            }
-        }
-
-
-        if (Hub.getNumberMessageReceived() >= 11)
-        {
-            break;
-        }
+        } else if (msg == "dead") {
+		hub.setHubCExit(true);
+	} else {
+		cout << "Message from Probe C: " << msg << endl;
+	}
         
     }
     cout << "Hub terminated" << endl;

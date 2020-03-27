@@ -4,8 +4,6 @@ using namespace std;
 
 int main(int num, char *args[]) {
     int alpha = 11997;
-    int messageSnt = 0;
-    string pid = "";
 
 	if (num < 2) {
 		std::cout << "Error: Wrong argument" << std::endl;
@@ -21,20 +19,21 @@ int main(int num, char *args[]) {
             if (probeA.sendMessage(to_string(gen).c_str(), 200,0)) {
                 cout << "Error when sending message from ProbeA" << endl;
             }
-            messageSnt++;
-            if (probeA.recieveMessage(100, 0,pid)) {
+            if (probeA.recieveMessage(100, 0,msg)) {
                 cout << "error recieving message in ProbeA" << endl;
             }
         } else if (gen < 50)
         {
-		cout << "ProbA terminated" << endl;
+        	cout << "ProbA terminated" << endl;
             break;
         }
         
         //cout << "A rand Num: " << probeA.genRandNum(0,1000000) << endl;
 
     }
-    
+    if (probeA.sendMessage("dead", 200,0)) {
+    	cout << "Error when sending message from ProbeA" << endl;
+    }
     cout << "Probe A terminated" << endl;
    
 

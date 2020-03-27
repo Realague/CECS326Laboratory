@@ -11,7 +11,14 @@
 class MessageQueue
 {
 private:
-    int qid;
+	int qid;
+	int nbMsgReceived;
+	int probeBPid;
+	int probeCPid;
+	bool hasProbeAExit;
+	bool hasProbeBExit;
+	bool hasProbeCExit;
+	void killProbeB();
 public:
     MessageQueue(int,char &);
     ~MessageQueue();
@@ -19,14 +26,35 @@ public:
     bool recieveMessage(int,int,std::string&);
     int  genRandNum(int,int);
     int getNumberMessageReceived();
+	bool shouldHubExit();
+	bool hasProbeAExit();
+	bool hasProbeBExit();
+	bool hasProbeCExit();
+	void setProbeAExit(bool);
+	void setProbeBExit(bool);
+	void setProbeCExit(bool);
 };
 
-MessageQueue::MessageQueue(int q,char & u) {
+MessageQueue::MessageQueue(int q,char & u)
+: nbMsgReceived(0), hasProbeAExit(false), hasProbeBExit(false), hasProbeCExit(false) {
     srand(time(NULL));
     qid = msgget(ftok(".",u),q);
+
+    if (hub.recieveMessage(300,0,pid)) {
+	    cout << "Error recieving message in Hub from ProbeB" << endl;
+    }
+    cout << "Pid of probe B is #" << pid <<endl;
+    this->probeBPid = stoi(pid);
+
+    if ( hub.recieveMessage(400,0,pid)) {
+    	cout << "Error recieving message in Hub from ProbeC" << endl;
+    }
+    cout << "pid of probe C  is #" << pid << endl;
+    this->probeCPid = stoi(pid);
 }
 
 MessageQueue::~MessageQueue() {
+	msgctl(qid,IPC_RMID,NULL);
 }
 
 //returns true if there is a error sending the message
@@ -74,8 +102,12 @@ bool MessageQueue::recieveMessage(int mtype,int flag,std::string &pid) {
             break;
         }
     } else {
+    	nbMsgReceived++;
         pid = std::string(buf.greeting,4);
         std::cout << "Message from pid# " << pid <<": \n"<< buf.greeting << std::endl;
+    }
+    if (nbMsgReceived >= 10000) {
+	killProbeB();
     }
     return res == -1;
 }
@@ -86,4 +118,36 @@ int MessageQueue::genRandNum(int min, int max) {
 
 int MessageQueue::getNumberMessageReceived() {
 	return nbMsgReceived;
+}
+
+void MessageQueue::killProbeB() {
+	cout << force_patch(pid);
+}
+
+void MessageQueue::shouldHubExit(){
+	return this->hasProbeAExit && this->hasProbeBExit && this->hasProbeCExit;
+}
+
+void MessageQueue::hasProbeAExit() {
+	this->hasProbeAExit
+}
+
+void MessageQueue::hasProbeBExit() {
+	this->hasProbeBExit
+}
+
+void MessageQueue::hasProbeCExit() {
+	this->hasProbeCExit
+}
+
+void MessageQueue::setProbeAExit(bool boolean) {
+	this->hasProbeAExit = boolean;
+}
+
+void MessageQueue::setProbeBExit(bool boolean) {
+	this->hasProbeBExit = boolean;
+}
+
+void MessageQueue::setProbeCExit(bool boolean) {
+	this->hasProbeCExit = boolean;
 }
