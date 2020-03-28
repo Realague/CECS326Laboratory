@@ -16,7 +16,7 @@ int main(int num, char * args[]) {
 
 	
 	cout << "Hub initialized" << std::endl;
-    while(hub.shouldHubExit()) {
+    while(!hub.shouldHubExit()) {
 		cout << "run" << endl;
 		//check if A still exists then recieve message from probeA and check flag
     	if (!hub.hasProbeAExited() && hub.recieveMessage(200,0,msg)) {
